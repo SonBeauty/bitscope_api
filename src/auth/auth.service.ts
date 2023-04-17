@@ -1,13 +1,22 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Inject,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+  BadRequestException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
-
-import * as bcrypt from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { EmailForgotDto } from './dto/emailForgot.dto';
+import { NewPasswordDto } from './dto/newPassword.dto';
 import { MailService } from '../mail/mail.service';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +44,7 @@ export class AuthService {
 
     const token = this.jwtService.sign({ id: user._id });
 
-    const confirmationLink = `http://localhost:3000/auth/active/${token}`;
+    const confirmationLink = `${process.env.SRC}/auth/active/${token}`;
 
     const mailOptions = {
       to: email,
@@ -86,5 +95,54 @@ export class AuthService {
     const token = this.jwtService.sign({ id: user._id });
 
     return { token };
+  }
+
+  async forgot(
+    emailForgotDto: EmailForgotDto,
+  ): Promise<{ email: string; token: string }> {
+    const { email } = emailForgotDto;
+
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const token = this.jwtService.sign({ id: user._id });
+
+    const resetPassword = `${process.env.SRC}/auth/newPassword/${token}`;
+
+    const mailOptions = {
+      to: email,
+      subject: 'Password Reset Request',
+      text: `Please click on the following link to Reset password: ${resetPassword}`,
+    };
+
+    await this.mailService.send(mailOptions);
+    throw new HttpException('email send', HttpStatus.OK);
+  }
+
+  async newPassword(
+    token: string,
+    newPasswordDto: NewPasswordDto,
+  ): Promise<{ token: string; newPasswordDto: NewPasswordDto }> {
+    const { password, confirmPassword } = newPasswordDto;
+
+    const decoded = this.jwtService.verify(token);
+
+    if (password !== confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
+    const userUpdate = await this.userModel.updateOne(
+      { _id: decoded.id },
+      { password },
+    );
+
+    if (!userUpdate) {
+      throw new NotFoundException('User not found');
+    }
+
+    throw new HttpException('password change', HttpStatus.OK);
   }
 }
