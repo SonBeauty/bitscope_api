@@ -12,11 +12,17 @@ export class UsersService {
 
   async index(): Promise<User[]> {
     const users = await this.userModel.find({}, { password: 0 }).exec();
-    if (users) {
-      return users;
+    return users;
+  }
+
+  async show(id: string): Promise<User | null> {
+    const data = await this.userModel.findById(id).select('-password').exec();
+
+    if (data) {
+      return data;
     } else {
       throw new HttpException(
-        'Call users wrong ',
+        'Call id wrong ',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

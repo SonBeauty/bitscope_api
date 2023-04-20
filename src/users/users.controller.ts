@@ -10,4 +10,8 @@ export class UsersController {
   index(): Promise<any> {
     return this.userService.index();
   }
+  @Get('/:id')
+  async show(@Param('id') id: string): Promise<User | null> {
+    return this.userService.show(id);
+  }
 }

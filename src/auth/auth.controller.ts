@@ -1,9 +1,21 @@
-import { Body, Controller, Get, Post, Param, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Param,
+  Put,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { EmailForgotDto } from './dto/emailForgot.dto';
 import { NewPasswordDto } from './dto/newPassword.dto';
+import { FindUserDto } from './dto/findUser.dto';
+import { User } from './schemas/user.schema';
+import { JwtStrategy } from './jwt.strategy';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -38,5 +50,12 @@ export class AuthController {
     newPasswordDto: { password: string; confirmPassword: string };
   }> {
     return this.authService.newPassword(token, newPasswordDto);
+  }
+
+  @UseGuards(JwtStrategy)
+  @Get('/')
+  async show(@Req() req) {
+    const user = await this.authService.show(req.user);
+    return user;
   }
 }
