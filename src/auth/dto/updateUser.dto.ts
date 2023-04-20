@@ -1,6 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
-export class UserListDto {
+export class UpdateUserDto {
   @IsString()
   readonly name: string;
 

@@ -18,6 +18,8 @@ import { EmailForgotDto } from './dto/emailForgot.dto';
 import { NewPasswordDto } from './dto/newPassword.dto';
 import { MailService } from '../mail/mail.service';
 import * as bcrypt from 'bcryptjs';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { JwtStrategy } from './jwt.strategy';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +29,7 @@ export class AuthService {
     private jwtService: JwtService,
     @Inject(MailService)
     private readonly mailService: MailService,
+    private strategyService: JwtStrategy,
   ) {}
 
   async signUp(
@@ -159,5 +162,20 @@ export class AuthService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async update(token: string, updateData: UpdateUserDto): Promise<User> {
+    const decoded = this.jwtService.verify(token);
+
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(decoded.id, updateData, { new: true })
+      .select('-password')
+      .exec();
+
+    if (!updatedUser) {
+      throw new HttpException('Token wrong ', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    return updatedUser;
   }
 }

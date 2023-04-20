@@ -13,9 +13,9 @@ import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { EmailForgotDto } from './dto/emailForgot.dto';
 import { NewPasswordDto } from './dto/newPassword.dto';
-import { FindUserDto } from './dto/findUser.dto';
-import { User } from './schemas/user.schema';
 import { JwtStrategy } from './jwt.strategy';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { User } from './schemas/user.schema';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -56,6 +56,14 @@ export class AuthController {
   @Get('/')
   async show(@Req() req) {
     const user = await this.authService.show(req.user);
+    return user;
+  }
+
+  @UseGuards(JwtStrategy)
+  @Put('/')
+  async update(@Req() req, @Body() updateUser: UpdateUserDto) {
+    const user = await this.authService.update(req.headers.bearer, updateUser);
+
     return user;
   }
 }
