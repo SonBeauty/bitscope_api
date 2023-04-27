@@ -6,7 +6,6 @@ import {
   HttpException,
   HttpStatus,
   BadRequestException,
-  Param,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -151,17 +150,20 @@ export class AuthService {
   }
 
   async show(token: string): Promise<User> {
+    const decoded = this.jwtService.verify(token);
+
     const user = await this.userModel
-      .findOne({ token }, { password: 0 })
+      .findById(decoded.id)
+      .select('-password')
       .exec();
-    if (user) {
-      return user;
-    } else {
+
+    if (!user) {
       throw new HttpException(
         'Token Wrong Or Dont Have User',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+    return user;
   }
 
   async update(token: string, updateData: UpdateUserDto): Promise<User> {

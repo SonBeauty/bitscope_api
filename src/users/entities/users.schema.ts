@@ -1,4 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as MongooseDelete from 'mongoose-delete';
+
+import { Document } from 'mongoose';
+
+export type UserDocument = User & Document;
 
 @Schema({
   timestamps: true,
@@ -13,8 +18,15 @@ export class User {
   @Prop()
   password: string;
 
+  @Prop({ default: 'user' })
+  role: string;
+
   @Prop()
   isActive: boolean;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+const _UserSchema = SchemaFactory.createForClass(User);
+
+_UserSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: 'all' });
+
+export const UserSchema = _UserSchema;
