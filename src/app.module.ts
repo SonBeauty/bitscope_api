@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailModule } from './mail/mail.module';
 import { AuthenticationModule } from './authentication/authentication.module';
+import { UserTelegramModule } from './user-telegram/user-telegram.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -24,6 +25,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
     }),
     MailModule,
     AuthenticationModule,
+    UserTelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],
