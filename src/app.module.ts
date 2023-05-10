@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailModule } from './mail/mail.module';
 import { AuthenticationModule } from './authentication/authentication.module';
+import { MessageTelegramModule } from './message-telegram/message-telegram.module';
 import { UserTelegramModule } from './user-telegram/user-telegram.module';
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserTelegramModule } from './user-telegram/user-telegram.module';
     }),
     MailModule,
     AuthenticationModule,
+    MessageTelegramModule,
     UserTelegramModule,
   ],
   controllers: [AppController],
