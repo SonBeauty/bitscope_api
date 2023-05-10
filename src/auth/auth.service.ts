@@ -80,7 +80,9 @@ export class AuthService {
     return;
   }
 
-  async login(loginDto: LoginDto): Promise<{ token: string }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ token: string; email: string; userName: string; id: any }> {
     const { email, password } = loginDto;
 
     const user = await this.userModel.findOne({ email });
@@ -97,7 +99,7 @@ export class AuthService {
 
     const token = this.jwtService.sign({ id: user._id });
 
-    return { token };
+    return { token, email: user.email, userName: user.name, id: user._id };
   }
 
   async forgot(
