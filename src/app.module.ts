@@ -10,6 +10,7 @@ import { MailModule } from './mail/mail.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { MessageTelegramModule } from './message-telegram/message-telegram.module';
 import { UserTelegramModule } from './user-telegram/user-telegram.module';
+import { CrawlerModule } from './crawler/crawler.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -28,6 +29,7 @@ import { UserTelegramModule } from './user-telegram/user-telegram.module';
     AuthenticationModule,
     MessageTelegramModule,
     UserTelegramModule,
+    CrawlerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
