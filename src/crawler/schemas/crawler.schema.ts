@@ -27,6 +27,9 @@ export class Crawler {
 
   @Prop({ type: Object })
   data: object;
+
+  @Prop()
+  updatedAt: Date;
 }
 
 export const CrawlerSchema = SchemaFactory.createForClass(Crawler);

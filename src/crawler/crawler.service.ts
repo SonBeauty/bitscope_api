@@ -4,13 +4,15 @@ import { Crawler } from './schemas/crawler.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { HttpService } from '@nestjs/axios';
 import { Model } from 'mongoose';
-
+import { Handler } from './schemas/handler.schema';
 @Injectable()
 export class CrawlerService {
   constructor(
     private readonly httpService: HttpService,
     @InjectModel(Crawler.name)
     private crawlerModel: Model<Crawler>,
+    @InjectModel(Handler.name)
+    private handlerModel: Model<Handler>,
   ) {}
   async crawler(createCrawlerDto: CreateCrawlerDto): Promise<any> {
     const response = [];
@@ -41,9 +43,17 @@ export class CrawlerService {
       }),
     ];
 
+    let handler = null;
+    let update = null;
+    let iteration = 0;
     for (let i = 0; i < postRequests.length; i++) {
       try {
-        await this.crawlerModel.create(postRequests[i].request);
+        const crawlerData = await this.crawlerModel.create(
+          postRequests[i].request,
+        );
+
+        const { id } = crawlerData;
+
         const { data } = await this.httpService
           .post<any>(`${process.env.CRAWLER}`, postRequests[i].request)
           .toPromise();
@@ -53,11 +63,28 @@ export class CrawlerService {
           });
           response.push({ data, status: postRequests[i].status });
         }
+
+        const updateTime = await this.crawlerModel.findById(id).exec();
+        if (!updateTime) {
+          throw new Error('not found');
+        }
+        update = new Date(`${updateTime.updatedAt}`);
       } catch (error) {
         throw new HttpException('Not Found', HttpStatus.FOUND);
       }
     }
+    while (!handler && iteration < 100) {
+      handler = await this.handlerModel.find({
+        group_name: `${createCrawlerDto.group_name}`,
+        date_end: { $lte: `${update}` },
+      });
+      iteration++;
 
-    return response;
+      if (!handler) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+
+    return handler;
   }
 }
