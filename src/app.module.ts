@@ -11,6 +11,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { MessageTelegramModule } from './message-telegram/message-telegram.module';
 import { UserTelegramModule } from './user-telegram/user-telegram.module';
 import { CrawlerModule } from './crawler/crawler.module';
+import { BitAuthenModule } from './bit-authen/bit-authen.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -30,6 +31,7 @@ import { CrawlerModule } from './crawler/crawler.module';
     MessageTelegramModule,
     UserTelegramModule,
     CrawlerModule,
+    BitAuthenModule,
   ],
   controllers: [AppController],
   providers: [AppService],
