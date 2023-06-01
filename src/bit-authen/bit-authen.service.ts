@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Bitauthen } from './schemas/bit-authen.schema';
 import { Model } from 'mongoose';
 import { BitauthenDto } from './dto/bit-authen.dto';
+import { HttpService } from '@nestjs/axios';
+import * as jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 @Injectable()
 export class BitAuthenService {
   constructor(
+    private readonly httpService: HttpService,
     @InjectModel(Bitauthen.name)
     private bitauthenModel: Model<Bitauthen>,
   ) {}
 
-  async create(request: BitauthenDto) {
+  async create(token, request: BitauthenDto) {
+    const decodedToken = jwt.decode(token);
+    const userId = decodedToken ? decodedToken['id'] : null;
+    if (!userId) {
+      throw new UnauthorizedException('Forbidden');
+    }
     const telegramLink = request.telegram.split('/');
     const twitterLink = '@' + request.twitter.split('/').pop();
     const lastPart = telegramLink[telegramLink.length - 1];
@@ -64,10 +73,51 @@ export class BitAuthenService {
           ranking: null,
         },
         data: {
-          data: null,
+          dataMembers: [],
+          dataAdmins: [],
+          dataMessages: [],
           status: '0',
         },
-        result: null,
+        result: {
+          review: {
+            active: 0,
+            normal: 0,
+            low: 0,
+            bot: 0,
+          },
+          activeReview: {
+            active: '0',
+            normal: '0',
+            low: '0',
+            bot: '0',
+          },
+          avg: {
+            goodProfile: 0,
+            avgActiveMember: 0,
+            postimeFrans: '0',
+            avgMess: 0,
+          },
+          activitiesOfTheWeek: {
+            percentUser: {
+              monday: 0,
+              tuesday: 0,
+              wednesday: 0,
+              thursday: 0,
+              friday: 0,
+              saturday: 0,
+              sunday: 0,
+            },
+          },
+          hourOfOperation: {
+            hour: null,
+          },
+          general: {
+            numberOfSample: 0,
+            numberOfConversation: 0,
+            numberOfAdmin: 0,
+          },
+          ranking: null,
+        },
       },
       twitter: {
         objectId: request.twitter,
@@ -81,6 +131,13 @@ export class BitAuthenService {
           like: 0,
           follower: 0,
           following: 0,
+          link: null,
+          bio: null,
+          location: null,
+          category: null,
+          nearAction: null,
+          lastTweet: null,
+          userName: null,
         },
         overview: {
           hightQuality: 0,
@@ -95,18 +152,34 @@ export class BitAuthenService {
           bubblesSpread: 0,
           locationVerifycation: 0,
           followersWithURL: 0,
+          lessTweets: 0,
         },
         data: {
           data: null,
           status: '0',
         },
-        result: null,
+        result: 0,
       },
+      createdBy: userId,
     });
+
+    axios.post('https://twitter.bitscope.global/twitter/crawl-profile', {
+      id: demand._id,
+      userId: demand.twitter.profile.name,
+    });
+
     return demand;
   }
 
   async show(id: string) {
     return this.bitauthenModel.findById(id).exec();
+  }
+
+  async index(token: string) {
+    const decodedToken = jwt.decode(token);
+    const userId = decodedToken ? decodedToken['id'] : null;
+    console.log(userId);
+
+    return this.bitauthenModel.find({ createdBy: userId });
   }
 }

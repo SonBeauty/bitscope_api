@@ -53,10 +53,53 @@ export class Bitauthen {
       ranking: object;
     };
     data: {
-      data: object;
+      dataMembers: [];
+      dataAdmins: [];
+      dataMessages: [];
       status: string;
     };
-    result: object;
+    result: [
+      {
+        review: {
+          active: number;
+          normal: number;
+          low: number;
+          bot: number;
+        };
+        activeReview: {
+          active: string;
+          normal: string;
+          low: string;
+          bot: string;
+        };
+        avg: {
+          goodProfile: number;
+          avgActiveMember: number;
+          postimeFrans: string;
+          avgMess: number;
+        };
+        activitiesOfTheWeek: {
+          percentUser: {
+            monday: number;
+            tuesday: number;
+            wednesday: number;
+            thursday: number;
+            friday: number;
+            saturday: number;
+            sunday: number;
+          };
+        };
+        hourOfOperation: {
+          hour: object;
+        };
+        general: {
+          numberOfSample: number;
+          numberOfConversation: number;
+          numberOfAdmin: number;
+        };
+        ranking: object;
+      },
+    ];
   };
 
   @Prop({ type: Object })
@@ -72,6 +115,13 @@ export class Bitauthen {
       like: number;
       follower: number;
       following: number;
+      link: string;
+      bio: string;
+      location: string;
+      category: string;
+      nearAction: object;
+      lastTweet: object;
+      userName: string;
     };
     overview: {
       hightQuality: number;
@@ -86,6 +136,7 @@ export class Bitauthen {
       bubblesSpread: number;
       locationVerifycation: number;
       followersWithURL: number;
+      lessTweets: number;
     };
     data: {
       data: object;
@@ -93,6 +144,9 @@ export class Bitauthen {
     };
     result: object;
   };
+
+  @Prop()
+  createdBy: string;
 }
 
 export const BitauthenSchema = SchemaFactory.createForClass(Bitauthen);
