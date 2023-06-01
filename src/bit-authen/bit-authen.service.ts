@@ -178,7 +178,6 @@ export class BitAuthenService {
   async index(token: string) {
     const decodedToken = jwt.decode(token);
     const userId = decodedToken ? decodedToken['id'] : null;
-    console.log(userId);
 
     return this.bitauthenModel.find({ createdBy: userId });
   }
