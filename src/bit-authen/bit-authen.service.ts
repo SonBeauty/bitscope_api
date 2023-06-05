@@ -76,6 +76,7 @@ export class BitAuthenService {
           dataMembers: [],
           dataAdmins: [],
           dataMessages: [],
+          totalMembers: 0,
           status: '0',
         },
         result: {
@@ -117,6 +118,7 @@ export class BitAuthenService {
             numberOfAdmin: 0,
           },
           ranking: null,
+          percent: 0,
         },
       },
       twitter: {
@@ -163,11 +165,20 @@ export class BitAuthenService {
       createdBy: userId,
     });
 
-    axios.post('https://twitter.bitscope.global/twitter/crawl-profile', {
-      id: demand._id,
-      userId: demand.twitter.profile.name,
-    });
+    const { _id } = demand._id;
 
+    try {
+      await axios.get(
+        `${process.env.TWITTER}?userId=${demand.twitter.profile.name}&objectId=${_id}`,
+        {
+          headers: {
+            'ngrok-skip-browser-warning': '',
+          },
+        },
+      );
+    } catch (error) {
+      console.error(error);
+    }
     return demand;
   }
 

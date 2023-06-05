@@ -51,11 +51,13 @@ export class Bitauthen {
         numberOfAdmin: number;
       };
       ranking: object;
+      percent: number;
     };
     data: {
       dataMembers: [];
       dataAdmins: [];
       dataMessages: [];
+      totalMembers: number;
       status: string;
     };
     result: [
@@ -142,7 +144,7 @@ export class Bitauthen {
       data: object;
       status: string;
     };
-    result: object;
+    results: object;
   };
 
   @Prop()
