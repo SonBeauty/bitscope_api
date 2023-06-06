@@ -21,169 +21,193 @@ export class BitAuthenService {
     if (!userId) {
       throw new UnauthorizedException('Forbidden');
     }
-    const telegramLink = request.telegram.split('/');
-    const twitterLink = '@' + request.twitter.split('/').pop();
+    const telegramLink = request.telegram && request.telegram.split('/');
+    const twitterLink =
+      request.twitter && '@' + request.twitter.split('/').pop();
     const lastPart = telegramLink[telegramLink.length - 1];
+    const existingTelegram = await this.bitauthenModel.findOne({
+      'telegram.objectId': request.telegram,
+    });
+    const existingTwitter = await this.bitauthenModel.findOne({
+      'telegram.objectId': request.telegram,
+    });
     const demand = await this.bitauthenModel.create({
-      telegram: {
-        objectId: request.telegram,
-        status: '0',
-        profile: {
-          objectId: request.telegram,
-          name: lastPart,
-        },
-        overview: {
-          review: {
-            active: 0,
-            normal: 0,
-            low: 0,
-            bot: 0,
-          },
-          activeReview: {
-            active: '0',
-            normal: '0',
-            low: '0',
-            bot: '0',
-          },
-          avg: {
-            goodProfile: 0,
-            avgActiveMember: 0,
-            postimeFrans: '0',
-            avgMess: 0,
-          },
-          activitiesOfTheWeek: {
-            percentUser: {
-              monday: 0,
-              tuesday: 0,
-              wednesday: 0,
-              thursday: 0,
-              friday: 0,
-              saturday: 0,
-              sunday: 0,
+      telegram:
+        request.telegram.length === 0
+          ? null
+          : existingTelegram
+          ? { ...existingTelegram?.telegram }
+          : {
+              objectId: request.telegram,
+              status: lastPart === undefined ? '-1' : '0',
+              profile: {
+                objectId: request.telegram,
+                name: lastPart,
+              },
+              overview: {
+                review: {
+                  active: 0,
+                  normal: 0,
+                  low: 0,
+                  bot: 0,
+                },
+                activeReview: {
+                  active: '0',
+                  normal: '0',
+                  low: '0',
+                  bot: '0',
+                },
+                avg: {
+                  goodProfile: 0,
+                  avgActiveMember: 0,
+                  postimeFrans: '0',
+                  avgMess: 0,
+                },
+                activitiesOfTheWeek: {
+                  percentUser: {
+                    monday: 0,
+                    tuesday: 0,
+                    wednesday: 0,
+                    thursday: 0,
+                    friday: 0,
+                    saturday: 0,
+                    sunday: 0,
+                  },
+                },
+                hourOfOperation: {
+                  hour: null,
+                },
+                general: {
+                  numberOfSample: 0,
+                  numberOfConversation: 0,
+                  numberOfAdmin: 0,
+                },
+                ranking: null,
+              },
+              data: {
+                dataMembers: [],
+                dataAdmins: [],
+                dataMessages: [],
+                totalMembers: 0,
+                status: '0',
+              },
+              result: {
+                review: {
+                  active: 0,
+                  normal: 0,
+                  low: 0,
+                  bot: 0,
+                },
+                activeReview: {
+                  active: '0',
+                  normal: '0',
+                  low: '0',
+                  bot: '0',
+                },
+                avg: {
+                  goodProfile: 0,
+                  avgActiveMember: 0,
+                  postimeFrans: '0',
+                  avgMess: 0,
+                },
+                activitiesOfTheWeek: {
+                  percentUser: {
+                    monday: 0,
+                    tuesday: 0,
+                    wednesday: 0,
+                    thursday: 0,
+                    friday: 0,
+                    saturday: 0,
+                    sunday: 0,
+                  },
+                },
+                hourOfOperation: {
+                  hour: null,
+                },
+                general: {
+                  numberOfSample: 0,
+                  numberOfConversation: 0,
+                  numberOfAdmin: 0,
+                },
+                ranking: null,
+                percent: 0,
+              },
             },
-          },
-          hourOfOperation: {
-            hour: null,
-          },
-          general: {
-            numberOfSample: 0,
-            numberOfConversation: 0,
-            numberOfAdmin: 0,
-          },
-          ranking: null,
-        },
-        data: {
-          dataMembers: [],
-          dataAdmins: [],
-          dataMessages: [],
-          totalMembers: 0,
-          status: '0',
-        },
-        result: {
-          review: {
-            active: 0,
-            normal: 0,
-            low: 0,
-            bot: 0,
-          },
-          activeReview: {
-            active: '0',
-            normal: '0',
-            low: '0',
-            bot: '0',
-          },
-          avg: {
-            goodProfile: 0,
-            avgActiveMember: 0,
-            postimeFrans: '0',
-            avgMess: 0,
-          },
-          activitiesOfTheWeek: {
-            percentUser: {
-              monday: 0,
-              tuesday: 0,
-              wednesday: 0,
-              thursday: 0,
-              friday: 0,
-              saturday: 0,
-              sunday: 0,
+      twitter:
+        request.twitter.length === 0
+          ? null
+          : existingTwitter
+          ? { ...existingTwitter.twitter }
+          : {
+              objectId: request.twitter,
+              status: '0',
+              profile: {
+                objectId: request.twitter,
+                name: twitterLink,
+                avatar: null,
+                joinedData: null,
+                tweet: 0,
+                like: 0,
+                follower: 0,
+                following: 0,
+                link: null,
+                bio: null,
+                location: null,
+                category: null,
+                nearAction: null,
+                lastTweet: null,
+                userName: null,
+              },
+              overview: {
+                hightQuality: 0,
+                normalQuality: 0,
+                lowQuality: 0,
+                badQuality: 0,
+                regularActivity: 0,
+                profileAvatar: 0,
+                followerSpread: 0,
+                tweetRatio: 0,
+                filledInBios: 0,
+                bubblesSpread: 0,
+                locationVerifycation: 0,
+                followersWithURL: 0,
+                lessTweets: 0,
+                highQualityPercentage: 0,
+                normalQualityPercentage: 0,
+                lowQualityPercentage: 0,
+                badQualityPercentage: 0,
+              },
+              data: {
+                data: null,
+                status: '0',
+              },
+              result: 0,
             },
-          },
-          hourOfOperation: {
-            hour: null,
-          },
-          general: {
-            numberOfSample: 0,
-            numberOfConversation: 0,
-            numberOfAdmin: 0,
-          },
-          ranking: null,
-          percent: 0,
-        },
-      },
-      twitter: {
-        objectId: request.twitter,
-        status: '0',
-        profile: {
-          objectId: request.twitter,
-          name: twitterLink,
-          avatar: null,
-          joinedData: null,
-          tweet: 0,
-          like: 0,
-          follower: 0,
-          following: 0,
-          link: null,
-          bio: null,
-          location: null,
-          category: null,
-          nearAction: null,
-          lastTweet: null,
-          userName: null,
-        },
-        overview: {
-          hightQuality: 0,
-          normalQuality: 0,
-          lowQuality: 0,
-          badQuality: 0,
-          regularActivity: 0,
-          profileAvatar: 0,
-          followerSpread: 0,
-          tweetRatio: 0,
-          filledInBios: 0,
-          bubblesSpread: 0,
-          locationVerifycation: 0,
-          followersWithURL: 0,
-          lessTweets: 0,
-        },
-        data: {
-          data: null,
-          status: '0',
-        },
-        result: 0,
-      },
       createdBy: userId,
     });
 
     const { _id } = demand._id;
-
-    try {
-      await axios.get(
-        `${process.env.TWITTER}?userId=${demand.twitter.profile.name}&objectId=${_id}`,
-        {
-          headers: {
-            'ngrok-skip-browser-warning': '',
+    if (twitterLink.length > 1) {
+      try {
+        await axios.get(
+          `${process.env.TWITTER}?userId=${demand.twitter.profile.name}&objectId=${_id}`,
+          {
+            headers: {
+              'ngrok-skip-browser-warning': '',
+            },
           },
-        },
-      );
-    } catch (error) {
-      console.error(error);
+        );
+      } catch (error) {
+        console.error(error);
+      }
     }
+    delete demand?.telegram?.data;
+
     return demand;
   }
 
   async show(id: string) {
-    return this.bitauthenModel.findById(id).exec();
+    return this.bitauthenModel.findById(id).select('-telegram.data').exec();
   }
 
   async index(token: string) {

@@ -139,6 +139,10 @@ export class Bitauthen {
       locationVerifycation: number;
       followersWithURL: number;
       lessTweets: number;
+      highQualityPercentage: number;
+      normalQualityPercentage: number;
+      lowQualityPercentage: number;
+      badQualityPercentage: number;
     };
     data: {
       data: object;
