@@ -189,7 +189,7 @@ export class BitAuthenService {
     const { _id } = demand._id;
     if (twitterLink.length > 1) {
       try {
-        await axios.get(
+        axios.get(
           `${process.env.TWITTER}?userId=${demand.twitter.profile.name}&objectId=${_id}`,
           {
             headers: {
