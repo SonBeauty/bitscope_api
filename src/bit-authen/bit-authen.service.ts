@@ -32,17 +32,10 @@ export class BitAuthenService {
       request.twitter && '@' + request.twitter.split('/').pop();
     const lastPart = telegramLink[telegramLink.length - 1];
 
-    const existingTwitter = await this.twitterModel.findOne({
-      objectId: request.twitter,
-    });
-    const existingTelegram = await this.telegramModel.findOne({
-      objectId: request.telegram,
-    });
-
     let newTelegram;
     let newTwitter;
 
-    if (!existingTelegram && request.telegram.length !== 0) {
+    if (request.telegram.length !== 0) {
       newTelegram = await this.telegramModel.create({
         objectId: request.telegram,
         status: lastPart === undefined ? '-1' : '0',
@@ -141,7 +134,7 @@ export class BitAuthenService {
       });
     }
 
-    if (!existingTwitter && request.twitter.length !== 0) {
+    if (request.twitter.length !== 0) {
       newTwitter = await this.twitterModel.create({
         objectId: request.twitter,
         status: '0',
@@ -184,6 +177,7 @@ export class BitAuthenService {
         data: {
           data: null,
           status: '0',
+          processBar: 0,
         },
         results: [0],
       });
@@ -193,11 +187,6 @@ export class BitAuthenService {
       telegram:
         request.telegram.length === 0
           ? null
-          : existingTelegram
-          ? {
-              objectId: lastPart,
-              dataId: existingTelegram._id,
-            }
           : {
               objectId: lastPart,
               dataId: newTelegram ? newTelegram._id : null,
@@ -205,11 +194,6 @@ export class BitAuthenService {
       twitter:
         request.twitter.length === 0
           ? null
-          : existingTwitter
-          ? {
-              objectId: twitterLink,
-              dataId: existingTwitter._id,
-            }
           : {
               objectId: twitterLink,
               dataId: newTwitter ? newTwitter._id : null,
@@ -217,17 +201,13 @@ export class BitAuthenService {
       createdBy: userId,
     });
 
-    const { _id } = demand._id;
-    if (!existingTwitter && twitterLink.length > 1) {
+    if (twitterLink.length > 1) {
       try {
-        axios.get(
-          `${process.env.TWITTER}?userId=${twitterLink}&objectId=${_id}`,
-          {
-            headers: {
-              'ngrok-skip-browser-warning': '',
-            },
+        axios.get(`${process.env.TWITTER}?objectId=${twitterLink}`, {
+          headers: {
+            'ngrok-skip-browser-warning': '',
           },
-        );
+        });
       } catch (error) {
         console.error(error);
       }

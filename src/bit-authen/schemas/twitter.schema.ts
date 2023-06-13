@@ -14,6 +14,7 @@ export class Twitter {
   profile: {
     objectId: string;
     name: string;
+    userName: string;
     avatar: string;
     joinedData: string;
     tweet: number;
@@ -26,34 +27,35 @@ export class Twitter {
     category: string;
     nearAction: object;
     lastTweet: object;
-    userName: string;
   };
 
   @Prop({ type: Object })
   overview: {
-    hightQuality: number;
+    highQualityPercentage: number;
+    highQuality: number;
+    normalQualityPercentage: number;
     normalQuality: number;
+    lowQualityPercentage: number;
     lowQuality: number;
+    badQualityPercentage: number;
     badQuality: number;
     regularActivity: number;
-    profileAvatar: number;
-    followerSpread: number;
     tweetRatio: number;
-    filledInBios: number;
-    bubblesSpread: number;
-    locationVerifycation: number;
+    followerRatio: number;
+    profileAvatar: number;
+    followersWithCategory: number;
+    followersWithBios: number;
+    locationInformation: number;
     followersWithURL: number;
-    lessTweets: number;
-    highQualityPercentage: number;
-    normalQualityPercentage: number;
-    lowQualityPercentage: number;
-    badQualityPercentage: number;
+    bubblesSpread: number;
+    graphQuality: object;
   };
 
   @Prop({ type: Object })
   data: {
     data: object;
     status: string;
+    processBar: number;
   };
 
   @Prop({ type: Array })
