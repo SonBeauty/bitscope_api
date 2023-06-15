@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { HttpService } from '@nestjs/axios';
 import { Model } from 'mongoose';
@@ -109,10 +114,71 @@ export class BitAuthenService {
     return response;
   }
 
-  async index(token: string) {
-    const decodedToken = jwt.decode(token);
-    const userId = decodedToken ? decodedToken['id'] : null;
+  async index(req: any, token: any): Promise<any> {
+    try {
+      const decodedToken = jwt.decode(token);
+      const userId = decodedToken ? decodedToken['id'] : null;
+      if (userId === undefined) {
+        throw new HttpException(
+          'not find user ',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      let options = {};
+      if (req.query.search) {
+        options = {
+          $and: [
+            {
+              $or: [
+                {
+                  'telegram.objectId': new RegExp(
+                    req.query.search.toString(),
+                    'i',
+                  ),
+                },
+                {
+                  'twitter.objectId': new RegExp(
+                    req.query.search.toString(),
+                    'i',
+                  ),
+                },
+              ],
+            },
+            { createdBy: userId },
+          ],
+        };
+      }
+      const query = this.bitauthenModel.find(
+        Object.keys(options).length !== 0 ? options : { createdBy: userId },
+      );
+      if (req.query.sort) {
+        query.sort({
+          price: req.query.sort,
+        });
+      }
+      const page: number = parseInt(req.query.page as any) || 1;
+      let limit = 9;
+      if (req.query.limit) {
+        limit = req.query.limit;
+      }
+      const total = await this.bitauthenModel
+        .count(
+          Object.keys(options).length !== 0 ? options : { createdBy: userId },
+        )
+        .exec();
+      const data = await query
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
 
-    return this.bitauthenModel.find({ createdBy: userId });
+      return {
+        data,
+        total,
+        page,
+        last_page: Math.ceil(total / limit),
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
