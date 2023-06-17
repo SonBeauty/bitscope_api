@@ -26,7 +26,6 @@ export class BitAuthenService {
       name: request.phone,
       status: '0',
       data: null,
-      comment: [''],
       overview: null,
     });
     return newPhone._id;

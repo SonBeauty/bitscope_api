@@ -30,9 +30,6 @@ export class Phone {
   @Prop({ type: Object })
   overview: object;
 
-  @Prop({ type: Array })
-  comment: [];
-
   @Prop()
   createdBy: string;
 }
