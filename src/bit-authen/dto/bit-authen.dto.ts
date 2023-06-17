@@ -1,4 +1,3 @@
-export class BitauthenDto {
-  twitter: string;
-  telegram: string;
+export class phoneDto {
+  phone: string;
 }

@@ -3,21 +3,38 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 @Schema({
   timestamps: true,
 })
-export class Bitauthen {
+export class Phone {
+  @Prop()
+  name: string;
+
   @Prop({ type: Object })
-  telegram: {
-    objectId: string;
-    dataId: string;
+  data: {
+    totalComment: number;
+    countGoodComment: number;
+    rating: string;
+    specifications: {
+      screen: string;
+      cameraFront: string;
+      cameraSelfie: string;
+      ram: string;
+      memory: string;
+      cpu: string;
+      battery: string;
+      sim: string;
+      os: string;
+      origin: string;
+      releaseTime: string;
+    };
   };
 
   @Prop({ type: Object })
-  twitter: {
-    objectId: string;
-    dataId: string;
-  };
+  overview: object;
+
+  @Prop({ type: Array })
+  comment: [];
 
   @Prop()
   createdBy: string;
 }
 
-export const BitauthenSchema = SchemaFactory.createForClass(Bitauthen);
+export const PhoneSchema = SchemaFactory.createForClass(Phone);
