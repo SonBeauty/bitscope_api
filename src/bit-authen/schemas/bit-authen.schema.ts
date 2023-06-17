@@ -5,6 +5,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 })
 export class Phone {
   @Prop()
+  status: string;
+
+  @Prop()
   name: string;
 
   @Prop({ type: Object })
