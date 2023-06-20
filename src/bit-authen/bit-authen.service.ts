@@ -31,7 +31,7 @@ export class BitAuthenService {
       specification: null,
       percent_senti: null,
     });
-    return newPhone._id;
+    return newPhone;
   }
 
   async show(id) {
