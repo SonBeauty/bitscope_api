@@ -27,6 +27,9 @@ export class BitAuthenService {
       status: '0',
       data: null,
       overview: null,
+      aspect_senti: null,
+      specification: null,
+      percent_senti: null,
     });
     return newPhone._id;
   }

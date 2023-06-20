@@ -35,6 +35,15 @@ export class Phone {
 
   @Prop()
   createdBy: string;
+
+  @Prop({ type: Object })
+  specification: object;
+
+  @Prop({ type: Object })
+  aspect_senti: object;
+
+  @Prop({ type: Object })
+  percent_senti: object;
 }
 
 export const PhoneSchema = SchemaFactory.createForClass(Phone);
